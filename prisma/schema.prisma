@@ -1,0 +1,62 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model Alts {
+  id       Int           @id @default(autoincrement()) @db.UnsignedInt
+  userId   String        @db.VarChar(255)
+  altId    String        @db.VarChar(255)
+  platform Platform
+}
+
+model Bans {
+  id          Int           @id @default(autoincrement()) @db.UnsignedInt
+  banTime     DateTime      @db.DateTime(0)
+  platfrom    Platform      
+  userId      String        @db.VarChar(255)
+  isBanned    Boolean
+  streamerId  String        @db.VarChar(255)
+  moderatorId String        @db.VarChar(255)
+  reason      String        @db.VarChar(255)
+  evidence    String        @db.VarChar(255)
+}
+
+model Mods {
+  id         Int          @id @default(autoincrement()) @db.UnsignedInt
+  discordId  String       @db.VarChar(255)         
+  twitchId   String       @db.VarChar(255)
+  streamerId String       @db.VarChar(255)
+  createdAt  DateTime     @default(now())
+  isVerified Boolean
+  modType    Platform
+}
+
+model Streamers {
+  id         Int                  @id @default(autoincrement()) @db.UnsignedInt
+  userId     String               @db.VarChar(255)
+  lastOnline DateTime             @db.DateTime(0)
+  channelId  String               @db.VarChar(255)
+  streamType Platform
+}
+
+model Users {
+  id        Int         @id @default(autoincrement()) @db.UnsignedInt
+  userId    String      @unique(map: "users_userid_unique") @db.VarChar(255)
+  platform  Platform
+  createdAt DateTime    @db.DateTime(0)
+  updatedAt DateTime    @db.DateTime(0)
+}
+
+enum Platform {
+  twitch
+  facebook
+  youtube
+  discord
+}

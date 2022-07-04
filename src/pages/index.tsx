@@ -1,18 +1,30 @@
-import type { GetServerSideProps } from "next";
 import { getSession, signIn, signOut, useSession } from "next-auth/react";
+import { GetServerSideProps } from "next/types";
 
-const Home = ({ twitchConnection }: PageProps) => {
+const Home = () => {
   const { data: session } = useSession();
 
   if (session) {
+    const checkVerification = async () => {
+      try {
+        await fetch(`/api/add-record`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" }
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    };
     return (
       <>
         <p>
           Signed in as {session?.user.id} / {session?.user.name}
         </p>
-        <p>
-          {twitchConnection?.id} / {twitchConnection?.name}
-        </p>
+
+        <div>
+          <button onClick={() => checkVerification()}>Connect</button>
+        </div>
+
         <button onClick={() => signOut()}>Sign out</button>
       </>
     );
@@ -29,41 +41,10 @@ export default Home;
 
 export const getServerSideProps: GetServerSideProps = async context => {
   const session = await getSession(context);
-  const accessToken = session?.accessToken || "";
-
-  const response = await fetch(
-    "https://discord.com/api/users/@me/connections",
-    {
-      method: "GET",
-      headers: {
-        authorization: `Bearer ${accessToken}`
-      }
-    }
-  );
-
-  const connections = await response.json();
-  const twitchConnection = await connections.find(
-    (connection: Connection) => connection.type === "twitch"
-  );
 
   return {
     props: {
-      session,
-      twitchConnection
+      session
     }
   };
-};
-
-interface PageProps {
-  twitchConnection: Connection;
-}
-
-type Connection = {
-  type: string;
-  id: string;
-  name: string;
-  visibility: number;
-  fried_sync: boolean;
-  show_activity: boolean;
-  verified: boolean;
 };

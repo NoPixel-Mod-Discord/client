@@ -14,10 +14,11 @@ export default NextAuth({
     })
   ],
   callbacks: {
-    async jwt({ token, account }) {
-      if (account) {
+    async jwt({ token, account, user }) {
+      if (account && user) {
         return {
-          accessToken: account.access_token
+          accessToken: account.access_token,
+          user
         };
       }
 
