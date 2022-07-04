@@ -12,7 +12,7 @@ const Home = () => {
           headers: { "Content-Type": "application/json" }
         });
       } catch (e) {
-        console.error(e);
+        alert(e);
       }
     };
     return (

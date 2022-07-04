@@ -40,7 +40,9 @@ export default async function handler(
 
     res.json(result);
   } else {
-    res.status(401).send({ message: "Unauthorized" });
+    res
+      .status(401)
+      .send({ message: "Unauthorized, Please try again or contact devs." });
   }
 }
 
