@@ -1,3 +1,4 @@
+import getStreamerList from "@lib/hashroot/get-streamers";
 import { getSession, signIn, signOut, useSession } from "next-auth/react";
 import { GetServerSideProps } from "next/types";
 
@@ -41,6 +42,26 @@ export default Home;
 
 export const getServerSideProps: GetServerSideProps = async context => {
   const session = await getSession(context);
+  getStreamerList();
+  // const response = await prisma.streamers.findMany();
+  // const streamerList = response.map(streamer => streamer.channelId);
+
+  // const twitchClient: Client = new tmi.client({
+  //   connection: {
+  //     reconnect: true,
+  //     secure: true
+  //   },
+  //   channels: streamerList
+  // });
+
+  // twitchClient.on("connected", () => {
+  //   console.log("Connected");
+  // });
+  // twitchClient.on("message", (channel, tags, message, self) => {
+  //   console.log(channel, message);
+  // });
+
+  // twitchClient.connect();
 
   return {
     props: {

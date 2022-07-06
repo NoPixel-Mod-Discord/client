@@ -16,7 +16,7 @@ module.exports = {
   plugins: ["prettier"],
   rules: {
     "prettier/prettier": 1,
-    "no-console": 1,
+    "no-console": [1, { allow: ["error"] }],
     "react/prop-types": 0
   }
 };
