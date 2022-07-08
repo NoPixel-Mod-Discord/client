@@ -1,17 +1,15 @@
-import prisma from "@lib/prisma";
+import moment from "moment";
 import { parse } from "node-html-parser";
 
-const getStreamerList = async (): Promise<void> => {
-  const response = await fetch("https://nopixel.hasroot.com/streamers.php")
-    .then(res => res.text())
-    .catch(err => {
-      console.error(err);
-    });
+const getStreamerList = async () => {
+  const response = await fetch(
+    "https://nopixel.hasroot.com/streamers.php"
+  ).then(res => res.text());
 
   const data = parse(response || "");
   const list = data.querySelectorAll(".streamerInfo");
 
-  list.map(async (tag: any) => {
+  const streamersList = list.map((tag: any) => {
     const info = tag._attrs;
 
     const streamerData: StreamerData = {
@@ -21,21 +19,26 @@ const getStreamerList = async (): Promise<void> => {
       streamType: "twitch"
     };
 
-    const response = await prisma.streamers.createMany({
-      data: {
-        userId: streamerData.userId,
-        lastOnline: streamerData.lastOnline,
-        channelId: streamerData.channelId,
-        streamType: "twitch"
-      },
-      skipDuplicates: true
-    });
-
-    return response;
+    return streamerData;
   });
+
+  return streamersList;
 };
 
-export default getStreamerList;
+const getfilteredItems = async () => {
+  const streamersList = await getStreamerList();
+
+  const filteredItems = streamersList.filter((streamer: StreamerData) => {
+    const lastActive = moment(streamer.lastOnline);
+    const monthAgo = moment().subtract(90, "days");
+
+    return lastActive.isAfter(monthAgo);
+  });
+
+  return filteredItems;
+};
+
+export default getfilteredItems;
 
 type StreamerData = {
   userId: string;

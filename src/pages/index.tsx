@@ -1,4 +1,4 @@
-import getStreamerList from "@lib/hashroot/get-streamers";
+import getfilteredItems from "@lib/hashroot/get-streamers";
 import { getSession, signIn, signOut, useSession } from "next-auth/react";
 import { GetServerSideProps } from "next/types";
 
@@ -42,7 +42,8 @@ export default Home;
 
 export const getServerSideProps: GetServerSideProps = async context => {
   const session = await getSession(context);
-  getStreamerList();
+  await getfilteredItems();
+
   // const response = await prisma.streamers.findMany();
   // const streamerList = response.map(streamer => streamer.channelId);
 
