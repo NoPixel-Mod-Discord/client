@@ -31,5 +31,8 @@ export default NextAuth({
 
       return session;
     }
+  },
+  theme: {
+    colorScheme: "dark"
   }
 });
