@@ -9,19 +9,11 @@ const Home: NextPage<PageProps> = ({ twitchConnection }) => {
 
   const addModerator = async () => {
     await axios
-      .post(
-        `${process.env.SERVER_URL}/add-moderator`,
-        {
-          userDiscordId: session?.user.id as any,
-          userId: twitchConnection?.id,
-        },
-        {
-          headers: {
-            "x-api-key": process.env.SERVER_API_KEY as string,
-          },
-        },
-      )
-      .catch((error: any) => console.error(error.data));
+      .post("/api/np-bot", {
+        userId: twitchConnection?.id,
+        userDiscordId: session?.user.id,
+      })
+      .catch(error => console.error(error));
   };
 
   if (session) {
@@ -67,6 +59,12 @@ export default Home;
 
 export const getServerSideProps: GetServerSideProps = async context => {
   const session = await getSession(context);
+
+  if (!session) {
+    return {
+      props: {},
+    };
+  }
 
   const response = await getUserTwitchConnection(session?.accessToken || "");
 

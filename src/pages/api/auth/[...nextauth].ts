@@ -1,24 +1,24 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID || "",
       clientSecret: process.env.DISCORD_CLIENT_SECRET || "",
       authorization: {
         params: {
-          scope: "identify email connections"
-        }
-      }
-    })
+          scope: "identify email connections",
+        },
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, account, user }) {
       if (account && user) {
         return {
           accessToken: account.access_token,
-          user
+          user,
         };
       }
 
@@ -30,9 +30,11 @@ export default NextAuth({
       session.error = token.error;
 
       return session;
-    }
+    },
   },
   theme: {
-    colorScheme: "dark"
-  }
-});
+    colorScheme: "dark",
+  },
+};
+
+export default NextAuth(authOptions);
