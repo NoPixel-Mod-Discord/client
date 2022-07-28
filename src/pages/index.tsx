@@ -1,9 +1,28 @@
+import { getUserTwitchConnection } from "@lib/discord";
+import axios from "axios";
 import { Avatar, Button } from "flowbite-react";
 import { getSession, signIn, signOut, useSession } from "next-auth/react";
-import { GetServerSideProps } from "next/types";
+import { GetServerSideProps, NextPage } from "next/types";
 
-const Home = () => {
+const Home: NextPage<PageProps> = ({ twitchConnection }) => {
   const { data: session } = useSession();
+
+  const addModerator = async () => {
+    await axios
+      .post(
+        `${process.env.SERVER_URL}/add-moderator`,
+        {
+          userDiscordId: session?.user.id as any,
+          userId: twitchConnection?.id,
+        },
+        {
+          headers: {
+            "x-api-key": process.env.SERVER_API_KEY as string,
+          },
+        },
+      )
+      .catch((error: any) => console.error(error.data));
+  };
 
   if (session) {
     return (
@@ -18,8 +37,16 @@ const Home = () => {
             <div className="space-y-1 font-medium dark:text-white">
               <p>{session?.user.name}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {session?.user.id}
+                Discord Id: {session?.user.id}
               </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Twitch Id: {twitchConnection?.id}
+              </p>
+              <div className="mt-4">
+                <Button size="sm" onClick={addModerator}>
+                  Link to Bot
+                </Button>
+              </div>
             </div>
           </Avatar>
         </div>
@@ -41,9 +68,29 @@ export default Home;
 export const getServerSideProps: GetServerSideProps = async context => {
   const session = await getSession(context);
 
+  const response = await getUserTwitchConnection(session?.accessToken || "");
+
+  const twitchConnection = response.find(
+    (connection: any) => connection.type === "twitch",
+  );
+
   return {
     props: {
-      session
-    }
+      session,
+      twitchConnection,
+    },
   };
 };
+
+interface PageProps {
+  twitchConnection: {
+    type: string;
+    id: string;
+    name: string;
+    visibility: number;
+    friend_sync: boolean;
+    show_activity: boolean;
+    verified: boolean;
+    two_way_link: boolean;
+  };
+}
