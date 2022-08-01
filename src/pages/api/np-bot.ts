@@ -28,10 +28,13 @@ export default async function handler(
         },
       },
     )
-    .catch((error: any) => console.error(error.data));
+    .catch((error: any) => {
+      return error.response;
+    });
 
-  if (!response.ok) {
-    return res.status(500).json({ error: "Something Went Wrong (:" });
+  if (response.status === 500) {
+    return res.status(500).json({ error: `${response.data.err}` });
   }
+
   return res.status(201).json({ error: "" });
 }

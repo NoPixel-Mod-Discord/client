@@ -13,7 +13,9 @@ const Home: NextPage<PageProps> = ({ twitchConnection }) => {
         userId: twitchConnection?.id,
         userDiscordId: session?.user.id,
       })
-      .catch(error => console.error(error));
+      .catch(error => {
+        alert(error.response.data.error);
+      });
   };
 
   if (session) {
