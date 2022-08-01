@@ -36,5 +36,15 @@ export default async function handler(
     return res.status(500).json({ error: `${response.data.err}` });
   }
 
+  // Handle CORS
+
+  if (!response.headers) {
+    response.headers = {
+      "access-control-allow-origin": "*",
+    };
+  } else {
+    response.headers["access-control-allow-origin"] = "*";
+  }
+
   return res.status(201).json({ error: "" });
 }
