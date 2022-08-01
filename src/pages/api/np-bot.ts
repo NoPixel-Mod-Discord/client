@@ -17,14 +17,14 @@ export default async function handler(
 
   const response: any = await axios
     .post(
-      `${process.env.SERVER_ENDPOINT}/add-moderator`,
+      `${process.env.API_ENDPOINT}/add-moderator`,
       {
         userDiscordId,
         userId,
       },
       {
         headers: {
-          "x-api-key": process.env.SERVER_API_KEY as string,
+          "x-api-key": process.env.API_KEY as string,
         },
       },
     )
